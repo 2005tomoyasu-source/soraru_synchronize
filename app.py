@@ -88,17 +88,17 @@ body {
 
 /* タイトルカード */
 .title-card {
-    background: linear-gradient(135deg, #e8f2ff, #cfe2ff);
+    background: linear-gradient(135deg, #e9f2ff, #d7e6ff);
     padding: 35px 20px;
     border-radius: 18px;
-    border: 1px solid #aac8ff;
+    border: 2px solid #8fb4ff;
     margin-bottom: 25px;
-    box-shadow: 0 4px 12px rgba(150, 180, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(120, 150, 220, 0.25);
 }
 
 /* タイトル文字 */
 .title-text {
-    color: #1a3d7c;
+    color: #0f1a33;  /* ★濃いネイビーで視認性UP */
     font-weight: 800;
     font-size: 2.3rem;
     line-height: 1.3;
@@ -108,7 +108,7 @@ body {
 
 /* サブタイトル */
 .subtitle-text {
-    color: #3d5fa3;
+    color: #2a4d8f;
     font-size: 1.1rem;
     text-align: center;
     margin-top: 8px;
@@ -116,22 +116,31 @@ body {
 
 /* コメントボックス */
 .result-box {
-    background: #e8f2ff;
+    background: #f9fbff;  /* ★ほぼ白に変更 */
     padding: 22px;
-    border-left: 6px solid #7fbfff;
+    border-left: 6px solid #5fa8ff;
     border-radius: 10px;
     margin: 20px 0;
-    box-shadow: 0 3px 10px rgba(150, 180, 255, 0.2);
+    border: 1px solid #bcd4ff;  /* ★枠線追加 */
+    box-shadow: 0 3px 10px rgba(150, 180, 255, 0.25);
+}
+
+.result-box h2, .result-box p {
+    color: #0f1a33;  /* ★濃いネイビーで統一 */
 }
 
 /* ランキングカード */
 .song-card {
     background: #ffffff;
-    border: 1px solid #cfe2ff;
+    border: 2px solid #bcd4ff;  /* ★枠線を濃く */
     padding: 18px;
     border-radius: 12px;
     margin-bottom: 14px;
     box-shadow: 0 3px 10px rgba(180, 200, 255, 0.25);
+}
+
+.song-card h3, .song-card h4, .song-card a {
+    color: #0f1a33;  /* ★文字色を濃くして視認性UP */
 }
 
 /* フォント統一 */
