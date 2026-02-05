@@ -1,5 +1,81 @@
-# ====== Streamlit UI ======
-st.set_page_config(page_title="【精密解析】そらる・シンクロ率チェッカー", layout="centered")
+import streamlit as st
+import librosa
+import numpy as np
+import pandas as pd
+import tempfile
+import os
+
+# ★ Streamlit のページ設定（必ず最上部） ★
+st.set_page_config(
+    page_title="【精密解析】そらる・シンクロ率チェッカー",
+    layout="centered"
+)
+
+# ====== データ読み込み ======
+@st.cache_data
+def load_soraru_data():
+    df = pd.read_csv("soraru_data.csv")
+    return df
+
+df = load_soraru_data()
+
+# ====== 音声特徴量抽出 ======
+def extract_user_features_from_file(uploaded_file, duration=15):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+        tmp.write(uploaded_file.read())
+        tmp_path = tmp.name
+
+    y, sr = librosa.load(tmp_path, duration=duration)
+    os.remove(tmp_path)
+
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+    mfcc_mean = np.mean(mfcc, axis=1)
+    mfcc_std = np.std(mfcc, axis=1)
+    return np.concatenate([mfcc_mean, mfcc_std])
+
+# ====== 距離 → スコア変換 ======
+def convert_to_score(dist, min_dist, max_dist):
+    if max_dist == min_dist:
+        return 50.0
+    score = 1 - (dist - min_dist) / (max_dist - min_dist)
+    score = score * 100
+    return max(5, min(score, 100))  # 最低5%
+
+# ====== 総合そらる率 + 曲ランキング ======
+def analyze_all(user_feat, df):
+    song_feats = df[[f"mfcc_{i}" for i in range(26)]].values
+
+    all_dists = []
+    for i in range(len(song_feats)):
+        for j in range(i + 1, len(song_feats)):
+            all_dists.append(np.linalg.norm(song_feats[i] - song_feats[j]))
+
+    min_dist = min(all_dists)
+    max_dist = max(all_dists)
+
+    soraru_center = song_feats.mean(axis=0)
+    dist_total = np.linalg.norm(user_feat - soraru_center)
+    soraru_rate = convert_to_score(dist_total, min_dist, max_dist)
+
+    results = []
+    for (_, row), song_feat in zip(df.iterrows(), song_feats):
+        dist = np.linalg.norm(user_feat - song_feat)
+        score = convert_to_score(dist, min_dist, max_dist)
+        results.append({
+            "song": row["song"],
+            "url": row["youtube_url"],
+            "score": score
+        })
+
+    df_res = pd.DataFrame(results).sort_values("score", ascending=False)
+    return soraru_rate, df_res
+
+# ====== コメント生成（あなたの長文コメントをそのまま使用） ======
+def generate_comment(rate: float) -> str:
+    # ★ 智康さんが作った長文コメントをそのまま貼ってください
+    # ここでは省略しますが、前回のメッセージの内容をそのまま入れてOK
+    return "（ここにあなたの長文コメント全文を貼ってください）"
+
 
 # ====== カスタムCSS（そらるテーマ） ======
 st.markdown("""
@@ -65,6 +141,7 @@ h1, h2, h3, h4, p, div {
 
 </style>
 """, unsafe_allow_html=True)
+
 
 # ====== タイトル ======
 st.markdown("""
