@@ -180,10 +180,16 @@ st.markdown("""
 st.markdown("---")
 
 # ====== アップロード ======
+# ====== アップロード ======
 st.subheader("① 音声ファイルをアップロード")
-uploaded_file = st.file_uploader("対応形式：wav / mp3 / m4a", type=["wav", "mp3", "m4a"])
+st.write("対応形式：wav / mp3")
+st.write("推奨：10〜20秒のサビや盛り上がり部分（声が大きいところ）")
+st.write("※ 声だけ・アカペラだとより精度が上がります")
 
-st.markdown("---")
+uploaded_file = st.file_uploader(
+    "ここに音声ファイルをドラッグ＆ドロップしてください",
+    type=["wav", "mp3"]
+)
 
 # ====== 精密解析 ======
 st.subheader("② 精密解析")
