@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import tempfile
 import os
+import urllib.parse
 
 # ★ Streamlit のページ設定（必ず最上部） ★
 st.set_page_config(
@@ -39,7 +40,7 @@ def convert_to_score(dist, min_dist, max_dist):
         return 50.0
     score = 1 - (dist - min_dist) / (max_dist - min_dist)
     score = score * 100
-    return max(5, min(score, 100))  # 最低5%
+    return max(5, min(score, 100))
 
 # ====== 総合そらる率 + 曲ランキング ======
 def analyze_all(user_feat, df):
@@ -70,7 +71,7 @@ def analyze_all(user_feat, df):
     df_res = pd.DataFrame(results).sort_values("score", ascending=False)
     return soraru_rate, df_res
 
-# ====== コメント生成（あなたの全文をそのまま反映） ======
+# ====== コメント生成（全文そのまま） ======
 def generate_comment(rate: float) -> str:
 
     if rate >= 95:
@@ -153,7 +154,6 @@ def generate_comment(rate: float) -> str:
 params = st.query_params
 
 shared_rate = None
-shared_song = None
 
 if "rate" in params:
     try:
@@ -161,10 +161,7 @@ if "rate" in params:
     except:
         shared_rate = None
 
-if "song1" in params:
-    shared_song = params["song1"]
-
-# ====== 共有モード ======
+# ====== 共有モード（TOP5再現） ======
 if shared_rate is not None:
     st.subheader("🔁 共有された診断結果")
 
@@ -175,8 +172,14 @@ if shared_rate is not None:
     </div>
     """, unsafe_allow_html=True)
 
-    if shared_song:
-        st.markdown(f"### 🥇 第1位：{shared_song}")
+    qp = st.query_params
+
+    if "song1" in qp:
+        st.markdown("### ④ あなたに近い そらる楽曲 TOP5")
+        for i in range(1, 6):
+            key = f"song{i}"
+            if key in qp:
+                st.markdown(f"**第{i}位：{qp[key]}**")
 
     st.stop()
 
@@ -310,6 +313,7 @@ if analyze_button:
             except Exception as e:
                 st.error(f"解析中にエラーが発生しました：{e}")
                 st.stop()
+
         st.success("解析が完了しました！")
 
         # ====== 結果 ======
@@ -351,49 +355,23 @@ if analyze_button:
 
         st.markdown("---")
 
-import urllib.parse
+        # ====== X共有ボタン（TOP5入り） ======
+        base_url = "https://sorarusynchronize-gvbjs7a9lwc48txtvyy7sw.streamlit.app/"
 
-# ====== X共有ボタン（TOP5入り） ======
-base_url = "https://sorarusynchronize-gvbjs7a9lwc48txtvyy7sw.streamlit.app/"
+        params = {
+            "rate": f"{soraru_rate:.1f}",
+            "song1": top5.iloc[0]["song"],
+            "song2": top5.iloc[1]["song"],
+            "song3": top5.iloc[2]["song"],
+            "song4": top5.iloc[3]["song"],
+            "song5": top5.iloc[4]["song"],
+        }
 
-params = {
-        "rate": f"{soraru_rate:.1f}",
-        "song1": top5.iloc[0]["song"],
-        "song2": top5.iloc[1]["song"],
-        "song3": top5.iloc[2]["song"],
-        "song4": top5.iloc[3]["song"],
-        "song5": top5.iloc[4]["song"],
-    }
+        encoded_params = urllib.parse.urlencode(params, safe="")
+        share_url = f"{base_url}?{encoded_params}"
 
-encoded_params = urllib.parse.urlencode(params, safe="")
-share_url = f"{base_url}?{encoded_params}"
-
-tweet_url = f"https://twitter.com/intent/tweet?text=そらる・シンクロ率診断！&url={share_url}"
-st.markdown(f"[🔗 Xで結果をシェアする]({tweet_url})")
-
-# ====== 共有モード（TOP5再現） ======
-if shared_rate is not None:
-    st.subheader("🔁 共有された診断結果")
-
-    st.markdown(f"""
-    <div class="result-box">
-        <h2>あなたのそらる・シンクロ率： {shared_rate:.1f}%</h2>
-        <p>{generate_comment(shared_rate)}</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ★ ランキング再現（ここが重要）
-    qp = st.query_params  # ← URLのパラメータを読む
-
-    if "song1" in qp:
-        st.markdown("### ④ あなたに近い そらる楽曲 TOP5")
-
-        for i in range(1, 6):
-            key = f"song{i}"
-            if key in qp:
-                st.markdown(f"**第{i}位：{qp[key]}**")
-
-    st.stop()
+        tweet_url = f"https://twitter.com/intent/tweet?text=そらる・シンクロ率診断！&url={share_url}"
+        st.markdown(f"[🔗 Xで結果をシェアする]({tweet_url})")
 
 else:
     st.info("音声ファイルをアップロードしてから「精密解析スタート」を押してください。")
