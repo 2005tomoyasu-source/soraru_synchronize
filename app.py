@@ -351,6 +351,11 @@ if analyze_button:
 
         st.markdown("---")
 
+    # ====== X共有ボタン ======
+    share_url = f"https://sorarusynchronize-gvbjs7a9lwc48txtvyy7sw.streamlit.app/?rate={soraru_rate:.1f}"
+    tweet_url = f"https://twitter.com/intent/tweet?text=そらる・シンクロ率診断！&url={share_url}"
+    st.markdown(f"[🔗 Xで結果をシェアする]({tweet_url})")
+
 else:
     st.info("音声ファイルをアップロードしてから「精密解析スタート」を押してください。")
 
