@@ -285,8 +285,11 @@ st.markdown("---")
 
 # ====== アップロード ======
 st.subheader("① 音声ファイルをアップロード")
+st.write("**対応形式：** wav / mp3 / m4a")
+st.write("**推奨：** 10〜20秒のサビや盛り上がり部分（声が大きいところ）")
+st.write("※ 声だけ・アカペラだとより精度が上がります")
 uploaded_file = st.file_uploader(
-    "対応形式：wav / mp3",
+    "ここに音声ファイルをドラッグ＆ドロップしてください",
     type=["wav", "mp3"]
 )
 
