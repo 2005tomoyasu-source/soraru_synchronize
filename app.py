@@ -351,10 +351,47 @@ if analyze_button:
 
         st.markdown("---")
 
-    # ====== X共有ボタン ======
-    share_url = f"https://sorarusynchronize-gvbjs7a9lwc48txtvyy7sw.streamlit.app/?rate={soraru_rate:.1f}"
-    tweet_url = f"https://twitter.com/intent/tweet?text=そらる・シンクロ率診断！&url={share_url}"
-    st.markdown(f"[🔗 Xで結果をシェアする]({tweet_url})")
+import urllib.parse
+
+# ====== X共有ボタン（TOP5入り） ======
+base_url = "https://sorarusynchronize-gvbjs7a9lwc48txtvyy7sw.streamlit.app/"
+
+params = {
+        "rate": f"{soraru_rate:.1f}",
+        "song1": top5.iloc[0]["song"],
+        "song2": top5.iloc[1]["song"],
+        "song3": top5.iloc[2]["song"],
+        "song4": top5.iloc[3]["song"],
+        "song5": top5.iloc[4]["song"],
+    }
+
+encoded_params = urllib.parse.urlencode(params, safe="")
+share_url = f"{base_url}?{encoded_params}"
+
+tweet_url = f"https://twitter.com/intent/tweet?text=そらる・シンクロ率診断！&url={share_url}"
+st.markdown(f"[🔗 Xで結果をシェアする]({tweet_url})")
+
+# ====== 共有モード（TOP5再現） ======
+if shared_rate is not None:
+    st.subheader("🔁 共有された診断結果")
+
+    st.markdown(f"""
+    <div class="result-box">
+        <h2>あなたのそらる・シンクロ率： {shared_rate:.1f}%</h2>
+        <p>{generate_comment(shared_rate)}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ランキング再現（★ここを修正）
+    if "song1" in st.query_params:
+        st.markdown("### ④ あなたに近い そらる楽曲 TOP5")
+
+        for i in range(1, 6):
+            key = f"song{i}"
+            if key in st.query_params:
+                st.markdown(f"**第{i}位：{st.query_params[key]}**")
+
+    st.stop()
 
 else:
     st.info("音声ファイルをアップロードしてから「精密解析スタート」を押してください。")
