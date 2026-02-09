@@ -297,4 +297,15 @@ st.subheader("② 精密解析")
 analyze_button = st.button("🔍 精密解析スタート")
 
 if analyze_button:
-    if uploaded
+    if uploaded_file is None:
+        st.warning("先に音声ファイルをアップロードしてください。")
+    else:
+        with st.spinner("解析中…"):
+            try:
+                user_feat = extract_user_features_from_file(uploaded_file, duration=15)
+                soraru_rate, result = analyze_all(user_feat, df)
+            except Exception as e:
+                st.error(f"解析中にエラーが発生しました：{e}")
+                st.stop()
+
+
