@@ -382,14 +382,16 @@ if shared_rate is not None:
     </div>
     """, unsafe_allow_html=True)
 
-    # ランキング再現（★ここを修正）
-    if "song1" in st.query_params:
+    # ★ ランキング再現（ここが重要）
+    qp = st.query_params  # ← URLのパラメータを読む
+
+    if "song1" in qp:
         st.markdown("### ④ あなたに近い そらる楽曲 TOP5")
 
         for i in range(1, 6):
             key = f"song{i}"
-            if key in st.query_params:
-                st.markdown(f"**第{i}位：{st.query_params[key]}**")
+            if key in qp:
+                st.markdown(f"**第{i}位：{qp[key]}**")
 
     st.stop()
 
