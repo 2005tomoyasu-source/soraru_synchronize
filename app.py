@@ -307,5 +307,47 @@ if analyze_button:
             except Exception as e:
                 st.error(f"解析中にエラーが発生しました：{e}")
                 st.stop()
+        st.success("解析が完了しました！")
 
+        # ====== 結果 ======
+        st.subheader("③ 結果")
+
+        st.markdown(f"""
+        <div class="result-box">
+            <h2>あなたのそらる・シンクロ率： {soraru_rate:.1f}%</h2>
+            <p>{generate_comment(soraru_rate)}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        # ====== ランキング ======
+        st.subheader("④ あなたに近い そらる楽曲 TOP5")
+
+        top5 = result.head(5).reset_index(drop=True)
+
+        # 1位
+        top1 = top5.iloc[0]
+        st.markdown(f"""
+        <div class="song-card">
+            <h3>🥇 第1位：{top1['song']}（{top1['score']:.1f}%）</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        st.video(top1["url"])
+        st.write(f"[YouTubeで開く]({top1['url']})")
+
+        # 2〜5位
+        for i in range(1, len(top5)):
+            row = top5.iloc[i]
+            st.markdown(f"""
+            <div class="song-card">
+                <h4>第{i+1}位：{row['song']}（{row['score']:.1f}%）</h4>
+                <a href="{row['url']}" target="_blank">YouTubeで開く</a>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+else:
+    st.info("音声ファイルをアップロードしてから「精密解析スタート」を押してください。")
 
