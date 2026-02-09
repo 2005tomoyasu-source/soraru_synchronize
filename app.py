@@ -76,6 +76,20 @@ def generate_comment(rate: float) -> str:
     # ここでは省略しますが、前回のメッセージの内容をそのまま入れてOK
     return "（ここにあなたの長文コメント全文を貼ってください）"
 
+# ====== URLパラメータ読み取り ======
+params = st.query_params
+
+shared_rate = None
+shared_song = None
+
+if "rate" in params:
+    try:
+        shared_rate = float(params["rate"])
+    except:
+        shared_rate = None
+
+if "song1" in params:
+    shared_song = params["song1"]
 
 # ====== カスタムCSS（そらるテーマ） ======
 st.markdown("""
