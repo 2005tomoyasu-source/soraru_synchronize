@@ -271,24 +271,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ====== SNSアイコン ======
-st.markdown("""
-<div style="text-align:center;">
-<a href="https://twitter.com/soraruru" target="_blank">
-    <img src="https://abs.twimg.com/favicons/twitter.ico" width="32">
-</a>
-&nbsp;&nbsp;
-<a href="https://www.youtube.com/@soraru" target="_blank">
-    <img src="https://www.youtube.com/s/desktop/fe2f1f8e/img/favicon_32x32.png" width="32">
-</a>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("---")
 
 # ====== アップロード ======
 st.subheader("① 音声ファイルをアップロード")
-st.write("**対応形式：** wav / mp3 / m4a")
+st.write("**対応形式：** wav / mp3 ")
 st.write("**推奨：** 10〜20秒のサビや盛り上がり部分（声が大きいところ）")
 st.write("※ 声だけ・アカペラだとより精度が上がります")
 uploaded_file = st.file_uploader(
